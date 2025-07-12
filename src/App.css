@@ -1,0 +1,139 @@
+body{
+    padding-bottom: 80px;
+}
+header{
+    background-color: black;
+}
+.icon-white {
+    filter: invert(1);
+    margin:5px 5px;
+}
+.icon-white:hover {
+    filter: invert(29%) sepia(99%) saturate(558%) hue-rotate(189deg) brightness(91%) contrast(96%);
+}
+
+.Links{
+    text-align: center;
+    background-color:rgb(232, 152, 23);
+}
+
+.Welcome{
+    font-family: "Playfair Display", serif;
+    font-optical-sizing: auto;
+    font-weight: 600;
+    font-style: normal;
+    text-align: center;
+    color: grey;
+}
+
+footer{
+    flex-shrink: 0;
+    text-align: center;
+    padding: 10px;
+    bottom:0px;
+    left: 0px;
+    position: fixed;
+    width: 100%;
+    margin-top: 40px;
+    background-color: rgb(162, 162, 162);
+    color: rgb(226, 220, 220);
+}
+
+.Paragraph{
+    font-family: "Playfair Display", serif;
+    font-optical-sizing: auto;
+    font-weight: 600;
+    font-style: normal;
+    text-align: center;
+}
+
+
+.TitleBar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: black;
+    /* padding: 10px; */
+    color:aliceblue;
+    height:50px;
+}
+  
+.Wallet {
+    width: 40px;
+    height: 40px;
+    margin-right: 10px;
+    margin-top: 1px;
+}
+
+.Heading{
+    font-family: "Pacifico", cursive;
+    font-weight: 400;
+    font-style: normal;
+
+}
+
+.topHeading{
+    font-family: "Playfair Display", serif;
+    font-optical-sizing: auto;
+    font-weight: 800;
+    font-style: normal;
+    text-align: center;
+    color: grey;
+    font-size: 30px;
+
+}
+
+.yellowHeading{
+    font-family: "Playfair Display", serif;
+    font-optical-sizing: auto;
+    font-weight: 800;
+    font-style: normal;
+    text-align: center;
+    color: rgb(255, 187, 0);
+    font-size: 30px;
+}
+
+.QrCode{
+    text-align: center;
+    padding: 20px;
+}
+
+.input {
+    padding: 12px 20px;
+    font-size: 16px;
+    border: 2px solid #3498db;
+    border-radius: 10px;
+    outline: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+.input:focus {
+    border-color: rgb(255, 187, 0);
+    box-shadow: 0 0 10px rgb(255, 187, 0);
+}
+
+.button {
+    padding: 12px 24px;
+    font-size: 16px;
+    background-color: #1313e9;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.2s;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.button:hover{
+    background-color: rgb(7, 7, 148);
+    
+}
+
+.centreBox {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-top: 40px;
+    gap: 20px;
+  }
