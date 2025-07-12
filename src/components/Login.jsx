@@ -3,7 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import Lottie from "lottie-react";
 import loginAnimation from "../animations/login.json"; 
 
-const API = import.meta.env.VITE_API_URL;
+const API = "https://expense-split-backend-1.onrender.com";
 
 function Login({ saveToken }) {
   const [username, setUsername] = useState("");

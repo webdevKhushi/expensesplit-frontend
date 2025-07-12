@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import Lottie from "lottie-react";
 import signUpAnimation from "../animations/signup.json";
 
-const API = import.meta.env.VITE_API_URL;
+const API = "https://expense-split-backend-1.onrender.com";
 
 function Signup() {
   const [username, setUsername] = useState("");

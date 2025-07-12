@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from "react";
 
-const API = import.meta.env.VITE_API_URL;
+const API = "https://expense-split-backend-1.onrender.com";
 
 function History({ token }) {
   const [history, setHistory] = useState([]);

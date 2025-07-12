@@ -10,7 +10,7 @@ function RoomDashboard({ token }) {
   const [history, setHistory] = useState([]);
   const descRef = useRef(null);
 
-  const API = import.meta.env.VITE_API_URL;
+  const API = "https://expense-split-backend-1.onrender.com";  // <-- updated here
   const roomId = window.location.pathname.split("/")[2]; // extract :roomId
 
   useEffect(() => {

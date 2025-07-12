@@ -10,6 +10,7 @@ function JoinRoom({ token }) {
   const { roomId: routeRoomId } = useParams();
 
   const roomId = routeRoomId || roomIdInput.trim();
+  const API = "https://expense-split-backend-1.onrender.com";
 
   const handleJoin = async () => {
     if (!roomId) {

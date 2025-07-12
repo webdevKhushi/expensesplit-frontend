@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { QRCodeCanvas } from "qrcode.react";  
 
-const API = import.meta.env.VITE_API_URL;
+const API = "https://expense-split-backend-1.onrender.com";
 
 function getUsernameFromToken(token) {
   try {
