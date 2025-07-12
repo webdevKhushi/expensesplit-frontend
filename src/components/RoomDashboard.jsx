@@ -1,3 +1,5 @@
+// src/components/RoomDashboard.js
+
 import React, { useEffect, useState, useRef } from "react";
 
 function RoomDashboard({ token }) {
@@ -8,6 +10,7 @@ function RoomDashboard({ token }) {
   const [history, setHistory] = useState([]);
   const descRef = useRef(null);
 
+  const API = import.meta.env.VITE_API_URL;
   const roomId = window.location.pathname.split("/")[2]; // extract :roomId
 
   useEffect(() => {
@@ -15,7 +18,7 @@ function RoomDashboard({ token }) {
 
     const fetchHistory = async () => {
       try {
-        const res = await fetch(`http://localhost:3000/api/room/${roomId}/history`, {
+        const res = await fetch(`${API}/api/room/${roomId}/history`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         const data = await res.json();
@@ -39,7 +42,7 @@ function RoomDashboard({ token }) {
     }
 
     try {
-      const response = await fetch(`http://localhost:3000/api/room/${roomId}/expense`, {
+      const response = await fetch(`${API}/api/room/${roomId}/expense`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -55,7 +58,7 @@ function RoomDashboard({ token }) {
         setPeople("");
 
         // ✅ Re-fetch updated history
-        const res = await fetch(`http://localhost:3000/api/room/${roomId}/history`, {
+        const res = await fetch(`${API}/api/room/${roomId}/history`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         const data = await res.json();
@@ -128,4 +131,3 @@ function RoomDashboard({ token }) {
 }
 
 export default RoomDashboard;
-

@@ -1,7 +1,7 @@
-// src/components/Dashboard.js
-
 import React, { useState, useRef, useEffect } from "react";
 import SplitResult from "./SplitResult";
+
+const API = import.meta.env.VITE_API_URL;
 
 function Dashboard({ token }) {
   const [desc, setDesc] = useState("");
@@ -20,12 +20,12 @@ function Dashboard({ token }) {
     const parsedPeople = parseInt(people);
 
     if (!trimmedDesc || isNaN(parsedAmount) || isNaN(parsedPeople) || parsedAmount <= 0 || parsedPeople <= 0) {
-      setMessage("⚠️ Please enter valid values.");
+      setMessage(" Please enter valid values.");
       return;
     }
 
     try {
-      const response = await fetch("http://localhost:3000/api/expense", {
+      const response = await fetch(`${API}/api/expense`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -1,6 +1,6 @@
-// src/components/History.js
-
 import React, { useEffect, useState, useCallback } from "react";
+
+const API = import.meta.env.VITE_API_URL;
 
 function History({ token }) {
   const [history, setHistory] = useState([]);
@@ -8,7 +8,7 @@ function History({ token }) {
 
   const fetchHistory = useCallback(async () => {
     try {
-      const res = await fetch("http://localhost:3000/api/history", {
+      const res = await fetch(`${API}/api/history`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

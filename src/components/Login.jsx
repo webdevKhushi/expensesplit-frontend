@@ -3,6 +3,8 @@ import { useNavigate, Link } from "react-router-dom";
 import Lottie from "lottie-react";
 import loginAnimation from "../animations/login.json"; 
 
+const API = import.meta.env.VITE_API_URL;
+
 function Login({ saveToken }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -14,7 +16,7 @@ function Login({ saveToken }) {
     setMessage("");
 
     try {
-      const res = await fetch("http://localhost:3000/api/login", {
+      const res = await fetch(`${API}/api/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password }),

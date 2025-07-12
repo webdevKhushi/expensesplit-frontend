@@ -1,7 +1,9 @@
 // src/components/CreateRoom.js
 
 import React, { useState } from "react";
-import { QRCodeCanvas } from "qrcode.react";  // ✅ Correct import
+import { QRCodeCanvas } from "qrcode.react";  
+
+const API = import.meta.env.VITE_API_URL;
 
 function getUsernameFromToken(token) {
   try {
@@ -30,7 +32,7 @@ function CreateRoom({ token }) {
     }
 
     try {
-      const res = await fetch("http://localhost:3000/api/rooms", {
+      const res = await fetch(`${API}/api/rooms`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

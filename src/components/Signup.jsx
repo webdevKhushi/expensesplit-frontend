@@ -3,6 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 import Lottie from "lottie-react";
 import signUpAnimation from "../animations/signup.json";
 
+const API = import.meta.env.VITE_API_URL;
+
 function Signup() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -13,7 +15,7 @@ function Signup() {
     e.preventDefault();
     setMessage("");
     try {
-      const res = await fetch("http://localhost:3000/api/signup", {
+      const res = await fetch(`${API}/api/signup`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password }),
@@ -31,11 +33,12 @@ function Signup() {
   };
 
   return (
-    <div><div style={{ width: 300, margin: "auto" }}>
-    <Lottie animationData={signUpAnimation} loop={true} />
-  </div>
+    <div>
+      <div style={{ width: 300, margin: "auto" }}>
+        <Lottie animationData={signUpAnimation} loop={true} />
+      </div>
       <h2 className="topHeading">Signup</h2>
-      <form className="centreBox"onSubmit={handleSubmit}>
+      <form className="centreBox" onSubmit={handleSubmit}>
         <input
           type="text"
           className="input"
