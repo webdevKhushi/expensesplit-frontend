@@ -86,7 +86,7 @@ function History({ token }) {
   }, [fetchHistory]);
 
   return (
-    <div>
+    <div className="centreBox">
       <h3 className="topHeading">Your Room-wise Expenses</h3>
       {message && <p style={{ color: "red" }}>{message}</p>}
 
@@ -96,7 +96,7 @@ function History({ token }) {
         ) : (
           history.map((entry) => (
             <li className="Paragraph" key={entry.room_id}>
-               You spent <strong>₹{entry.total_spent}</strong> in room "<strong>{entry.room_name}</strong>"
+               You spent <strong>Rs.{entry.total_spent}</strong> in room "<strong>{entry.room_name}</strong>"
             </li>
           ))
         )}
