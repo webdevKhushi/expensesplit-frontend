@@ -94,10 +94,13 @@ function History({ token }) {
           <li className="Paragraph">No room expenses yet.</li>
         ) : (
           history
-            .filter((entry) => entry.total_spent > 0) // ✅ Skip ₹0 entries (e.g., joined the room)
+            .filter((entry) => entry.total_spent > 0)
             .map((entry) => (
               <li className="Paragraph" key={entry.room_id}>
-                 You spent <strong>₹{entry.total_spent}</strong> in room "<strong>{entry.room_name}</strong>"
+                You spent <strong>₹{entry.total_spent}</strong> in room <strong>{entry.room_name}</strong>
+                <br />
+                Each participant paid: ₹
+                {(entry.total_spent / entry.participant_count).toFixed(2)}
               </li>
             ))
         )}
