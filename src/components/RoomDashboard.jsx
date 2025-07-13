@@ -1,13 +1,10 @@
-// src/components/RoomDashboard.js
-
 import React, { useEffect, useState, useRef } from "react";
 
 function RoomDashboard({ token }) {
   const [desc, setDesc] = useState("");
   const [amount, setAmount] = useState("");
-  const [participants, setParticipants] = useState([]);
   const [message, setMessage] = useState("");
-  const [history, setHistory] = useState([]);
+  const [participants, setParticipants] = useState([]);
   const descRef = useRef(null);
 
   const API = "https://expense-split-backend-1.onrender.com";
@@ -16,33 +13,28 @@ function RoomDashboard({ token }) {
   useEffect(() => {
     descRef.current?.focus();
 
-    const fetchParticipantsAndHistory = async () => {
+    const fetchRoomData = async () => {
       try {
-        const [usersRes, historyRes] = await Promise.all([
-          fetch(`${API}/api/room/${roomId}/users`, {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-          fetch(`${API}/api/room/${roomId}/history`, {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-        ]);
+        const res = await fetch(`${API}/api/room/${roomId}/details`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
 
-        if (!usersRes.ok || !historyRes.ok) {
-          throw new Error("Failed to load data.");
+        if (!res.ok) {
+          const errorText = await res.text();
+          console.error("Error fetching room details:", errorText);
+          setMessage("Failed to load room data.");
+          return;
         }
 
-        const usersData = await usersRes.json();
-        const historyData = await historyRes.json();
-
-        setParticipants(usersData); // expecting array of usernames
-        setHistory(historyData);
-        setMessage("");
+        const data = await res.json();
+        setParticipants(data.participants || []);
       } catch (err) {
-        setMessage("Failed to load history.");
+        console.error("Room data fetch error:", err);
+        setMessage("Server error while loading room data.");
       }
     };
 
-    fetchParticipantsAndHistory();
+    fetchRoomData();
   }, [roomId, token]);
 
   const handleAddExpense = async () => {
@@ -51,6 +43,11 @@ function RoomDashboard({ token }) {
 
     if (!trimmedDesc || isNaN(parsedAmount) || parsedAmount <= 0) {
       setMessage("Please enter a valid description and amount.");
+      return;
+    }
+
+    if (participants.length === 0) {
+      setMessage("No users found in the room to split with.");
       return;
     }
 
@@ -68,18 +65,14 @@ function RoomDashboard({ token }) {
         setMessage("Expense added successfully!");
         setDesc("");
         setAmount("");
-
-        // Re-fetch updated history and participants
-        const res = await fetch(`${API}/api/room/${roomId}/history`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        const data = await res.json();
-        setHistory(data);
       } else {
+        const errorText = await response.text();
+        console.error("Add expense failed:", errorText);
         setMessage("Failed to add expense.");
       }
     } catch (err) {
-      setMessage("Server error: " + err.message);
+      console.error("Add expense error:", err);
+      setMessage("Server error while adding expense.");
     }
   };
 
@@ -91,17 +84,16 @@ function RoomDashboard({ token }) {
   return (
     <div className="centreBox">
       <h2 className="topHeading">Room Dashboard</h2>
-      <p className="Paragraph"><strong>Room ID:</strong> {roomId}</p>
-
-      {/* Participants */}
+      <p className="Paragraph">
+        <strong>Room ID:</strong> {roomId}
+      </p>
       <p className="Paragraph">
         <strong>Participants:</strong>{" "}
         {participants.length > 0
-          ? participants.join(", ")
+          ? participants.map((p) => p.name || p.email || "User").join(", ")
           : "No participants yet"}
       </p>
 
-      {/* Expense Input */}
       <input
         ref={descRef}
         className="input"
@@ -123,28 +115,14 @@ function RoomDashboard({ token }) {
 
       {message && <p>{message}</p>}
 
-      {/* Split Result */}
       {splitAmount && (
         <p className="Paragraph">
-          <strong>Each person should pay:</strong> Rs. {splitAmount}
+          <strong>Each person should pay:</strong> Rs.{splitAmount}
         </p>
-      )}
-
-      {/* History */}
-      <h3 className="yellowHeading">Expense History</h3>
-      {history.length === 0 ? (
-        <p className="Paragraph">No expenses yet.</p>
-      ) : (
-        <ul>
-          {history.map((item, idx) => (
-            <li key={idx}>
-              <strong>{item.description}</strong> – Rs. {item.amount} split among {item.people} people
-            </li>
-          ))}
-        </ul>
       )}
     </div>
   );
 }
 
 export default RoomDashboard;
+
