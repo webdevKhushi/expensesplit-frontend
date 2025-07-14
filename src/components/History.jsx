@@ -17,8 +17,9 @@ function History({ token }) {
       const data = await res.json();
 
       if (res.ok) {
-        setHistory(data); // Assuming your backend sends an array directly
-        setMessage("");
+        const filtered = (data || []).filter((exp) => parseFloat(exp.amount) > 0);
+        setHistory(filtered);
+        setMessage(filtered.length === 0 ? "No expenses yet." : "");
       } else {
         setMessage("Failed to fetch history.");
       }
@@ -37,18 +38,20 @@ function History({ token }) {
       {message && <p style={{ color: "red" }}>{message}</p>}
 
       <ul>
-        {history.length === 0 ? (
-          <li className="Paragraph">No expenses yet.</li>
-        ) : (
-          history.map((expense, index) => (
+        {history.map((expense, index) => {
+          const perPerson = (parseFloat(expense.amount) / expense.people).toFixed(2);
+          const dateStr = new Date(expense.created_at).toLocaleString();
+
+          return (
+            <ol>
             <li className="Paragraph" key={index}>
-              <strong>{expense.description}</strong> — ₹{expense.amount} split among {expense.people} people <br />
-              <span style={{ fontSize: "0.8em" }}>
-                on {new Date(expense.created_at).toLocaleString()}
-              </span>
+               You spent ₹{expense.amount} on <strong>{expense.description}</strong>, shared with {expense.people} people<br />
+               on {dateStr} <br />
+               Each person should pay: ₹{perPerson}
             </li>
-          ))
-        )}
+            </ol>
+          );
+        })}
       </ul>
     </div>
   );

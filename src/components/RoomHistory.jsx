@@ -46,11 +46,13 @@ function RoomHistory({ token, roomId, reload }) {
         ) : (
           expenses.map((exp, index) => (
             <li key={index} className="Paragraph">
-              <strong>{exp.username}</strong> added:{" "}
-              <em>{exp.description}</em> — ₹{exp.amount}
-              <br />
-              Shared by {exp.people} people on{" "}
-              {new Date(exp.created_at).toLocaleString()}
+            <strong>{exp.username}</strong> added:{" "}
+            <em>{exp.description}</em> — Rs.{exp.amount}
+             <br />
+                Shared by {exp.people} people on{" "}
+                {new Date(exp.created_at).toLocaleString()}
+             <br />
+            Each person should pay: ₹{(parseFloat(exp.amount) / exp.people).toFixed(2)}
             </li>
           ))
         )}
