@@ -9,16 +9,17 @@ function JoinRoom({ token }) {
   const navigate = useNavigate();
   const { roomId: routeRoomId } = useParams();
 
-  const roomId = routeRoomId || roomIdInput.trim();
-  
+  // ✅ Hardcoded backend API URL instead of using import.meta.env
+  const API = "https://expense-split-backend-1.onrender.com";
+  const roomId = (routeRoomId || roomIdInput).trim();
+
   const handleJoin = async () => {
     if (!roomId) {
       setMessage("Please enter a valid Room ID.");
       return;
     }
-  
+
     try {
-      const API = import.meta.env.VITE_API_URL;
       const res = await fetch(`${API}/api/join-room`, {
         method: "POST",
         headers: {
@@ -27,33 +28,35 @@ function JoinRoom({ token }) {
         },
         body: JSON.stringify({ room_id: roomId }),
       });
-  
+
       const data = await res.json();
-  
+
       if (res.ok) {
         setMessage("Successfully joined the room!");
-  
-        // ✅ Fetch participants right after joining
-        const usersRes = await fetch(`${API}/api/room/${roomId}/participants`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-  
-        const usersData = await usersRes.json();
-        if (usersData.success) {
-          console.log("Users in room:", usersData.users); // 🔁 You can pass this to context or state later
+
+        // Optional: Fetch participants
+        try {
+          const usersRes = await fetch(`${API}/api/room/${roomId}/participants`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+
+          const usersData = await usersRes.json();
+          if (usersData.success) {
+            console.log("Users in room:", usersData.users);
+          }
+        } catch (userFetchErr) {
+          console.warn("Failed to fetch participants", userFetchErr);
         }
-  
+
         setTimeout(() => {
           navigate(`/room/${roomId}/dashboard`);
-        }, 1000);
+        }, 800);
       } else {
-        setMessage(`${data.message || "Failed to join room."}`);
+        setMessage(data.message || "Failed to join room.");
       }
     } catch (error) {
       console.error("Join Room Error:", error);
-      setMessage(" Something went wrong. Please try again.");
+      setMessage("Something went wrong. Please try again.");
     }
   };
 
@@ -75,6 +78,4 @@ function JoinRoom({ token }) {
 }
 
 export default JoinRoom;
-
-
-
+ 
