@@ -52,22 +52,23 @@
 
 // export default History;
 
-
 import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 
 const API = "https://expense-split-backend-1.onrender.com";
 
-function RoomHistory({ token, roomId }) {
+function RoomHistory({ token }) {
+  const { roomId } = useParams(); // ⬅️ Extract roomId from URL
   const [expenses, setExpenses] = useState([]);
   const [message, setMessage] = useState("");
 
   useEffect(() => {
-    const fetchRoomExpenses = async () => {
-      if (!roomId) {
-        setMessage("Room ID is missing.");
-        return;
-      }
+    if (!roomId) {
+      setMessage("Room ID is missing.");
+      return;
+    }
 
+    const fetchRoomExpenses = async () => {
       try {
         const res = await fetch(`${API}/api/room/${roomId}/history`, {
           headers: {
@@ -97,7 +98,7 @@ function RoomHistory({ token, roomId }) {
       {message && <p style={{ color: "red" }}>{message}</p>}
 
       <ul>
-        {expenses.length === 0 ? (
+        {expenses.length === 0 && !message ? (
           <li className="Paragraph">No expenses recorded yet.</li>
         ) : (
           expenses.map((exp, index) => (
@@ -115,3 +116,5 @@ function RoomHistory({ token, roomId }) {
 }
 
 export default RoomHistory;
+
+
