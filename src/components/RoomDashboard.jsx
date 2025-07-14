@@ -158,12 +158,17 @@ function RoomDashboard({ token }) {
 
         const data = await res.json();
         setParticipants(data.participants || []);
-        setCreator(data.created_by?.toLowerCase() || "");
 
-        // Decode JWT token and extract current username
+        // Normalize creator value
+        const creatorValue = data.created_by?.trim().toLowerCase() || "";
+        setCreator(creatorValue);
+
+        // Decode JWT token and normalize current user
         const payloadBase64 = token.split(".")[1];
         const decodedPayload = JSON.parse(atob(payloadBase64));
-        setCurrentUser(decodedPayload.username?.toLowerCase() || "");
+        const userValue = decodedPayload.username?.trim().toLowerCase() || "";
+        setCurrentUser(userValue);
+
       } catch (err) {
         console.error("Room data fetch error:", err);
         setMessage("Server error while loading room data.");
@@ -271,3 +276,4 @@ function RoomDashboard({ token }) {
 }
 
 export default RoomDashboard;
+
