@@ -1,5 +1,3 @@
-// src/components/JoinRoom.js
-
 import React, { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -9,9 +7,11 @@ function JoinRoom({ token }) {
   const navigate = useNavigate();
   const { roomId: routeRoomId } = useParams();
 
-  // ✅ Hardcoded backend API URL instead of using import.meta.env
-  const API = "https://expense-split-backend-1.onrender.com";
+  // Use the route param if present, else fallback to input
   const roomId = (routeRoomId || roomIdInput).trim();
+
+  // ✅ Hardcoded API endpoint (matches your backend domain)
+  const API = "https://expense-split-backend-1.onrender.com";
 
   const handleJoin = async () => {
     if (!roomId) {
@@ -34,7 +34,7 @@ function JoinRoom({ token }) {
       if (res.ok) {
         setMessage("Successfully joined the room!");
 
-        // Optional: Fetch participants
+        // ✅ Optional: Fetch participants (after successful join)
         try {
           const usersRes = await fetch(`${API}/api/room/${roomId}/participants`, {
             headers: { Authorization: `Bearer ${token}` },
@@ -43,14 +43,16 @@ function JoinRoom({ token }) {
           const usersData = await usersRes.json();
           if (usersData.success) {
             console.log("Users in room:", usersData.users);
+            // You can store this in context or state if needed
           }
-        } catch (userFetchErr) {
-          console.warn("Failed to fetch participants", userFetchErr);
+        } catch (fetchErr) {
+          console.warn("Could not fetch participants", fetchErr);
         }
 
+        // ✅ Redirect to Room Dashboard after success
         setTimeout(() => {
           navigate(`/room/${roomId}/dashboard`);
-        }, 800);
+        }, 1000);
       } else {
         setMessage(data.message || "Failed to join room.");
       }
@@ -78,4 +80,4 @@ function JoinRoom({ token }) {
 }
 
 export default JoinRoom;
- 
+
