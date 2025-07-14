@@ -8,11 +8,6 @@ function RoomHistory({ token, roomId, reload }) {
 
   useEffect(() => {
     const fetchRoomExpenses = async () => {
-      if (!roomId) {
-        setMessage("Room ID is missing.");
-        return;
-      }
-
       try {
         const res = await fetch(`${API}/api/room/${roomId}/history`, {
           headers: {
@@ -33,11 +28,11 @@ function RoomHistory({ token, roomId, reload }) {
       }
     };
 
-    fetchRoomExpenses();
-  }, [roomId, token, reload]); // 🔁 Refetch on reload
+    if (roomId) fetchRoomExpenses();
+  }, [token, roomId, reload]);
 
   return (
-    <div className="centreBox">
+    <div>
       <h3 className="topHeading">Room Expense History</h3>
       {message && <p style={{ color: "red" }}>{message}</p>}
 
@@ -47,7 +42,8 @@ function RoomHistory({ token, roomId, reload }) {
         ) : (
           expenses.map((exp, index) => (
             <li key={index} className="Paragraph">
-              <strong>{exp.username}</strong> added: <em>{exp.description}</em> — Rs.{exp.amount}
+              <strong>{exp.username}</strong> added:{" "}
+              <em>{exp.description}</em> — Rs.{exp.amount}
               <br />
               Shared by {exp.people} people on{" "}
               {new Date(exp.created_at).toLocaleString()}
