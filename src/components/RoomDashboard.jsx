@@ -1,192 +1,122 @@
-// import React, { useEffect, useState, useRef } from "react";
-
-// function RoomDashboard({ token }) {
-//   const [desc, setDesc] = useState("");
-//   const [amount, setAmount] = useState("");
-//   const [message, setMessage] = useState("");
-//   const [participants, setParticipants] = useState([]);
-//   const descRef = useRef(null);
-
-//   const API = "https://expense-split-backend-1.onrender.com";
-//   const roomId = window.location.pathname.split("/")[2];
-
-//   useEffect(() => {
-//     descRef.current?.focus();
-
-//     const fetchRoomData = async () => {
-//       try {
-//         const res = await fetch(`${API}/api/room/${roomId}/details`, {
-//           headers: { Authorization: `Bearer ${token}` },
-//         });
-
-//         if (!res.ok) {
-//           const errorText = await res.text();
-//           console.error("Error fetching room details:", errorText);
-//           setMessage("Failed to load room data.");
-//           return;
-//         }
-
-//         const data = await res.json();
-//         setParticipants(data.participants || []);
-//       } catch (err) {
-//         console.error("Room data fetch error:", err);
-//         setMessage("Server error while loading room data.");
-//       }
-//     };
-
-//     fetchRoomData();
-//   }, [roomId, token]);
-
-//   const handleAddExpense = async () => {
-//     const trimmedDesc = desc.trim();
-//     const parsedAmount = parseFloat(amount);
-
-//     if (!trimmedDesc || isNaN(parsedAmount) || parsedAmount <= 0) {
-//       setMessage("Please enter a valid description and amount.");
-//       return;
-//     }
-
-//     if (participants.length === 0) {
-//       setMessage("No users found in the room to split with.");
-//       return;
-//     }
-
-//     try {
-//       const response = await fetch(`${API}/api/room/${roomId}/expense`, {
-//         method: "POST",
-//         headers: {
-//           "Content-Type": "application/json",
-//           Authorization: `Bearer ${token}`,
-//         },
-//         body: JSON.stringify({ desc: trimmedDesc, amount: parsedAmount }),
-//       });
-
-//       if (response.ok) {
-//         setMessage("Expense added successfully!");
-//         setDesc("");
-//         setAmount("");
-//       } else {
-//         const errorText = await response.text();
-//         console.error("Add expense failed:", errorText);
-//         setMessage("Failed to add expense.");
-//       }
-//     } catch (err) {
-//       console.error("Add expense error:", err);
-//       setMessage("Server error while adding expense.");
-//     }
-//   };
-
-//   const splitAmount =
-//     parseFloat(amount) > 0 && participants.length > 0
-//       ? (parseFloat(amount) / participants.length).toFixed(2)
-//       : null;
-
-//   return (
-//     <div className="centreBox">
-//       <h2 className="topHeading">Room Dashboard</h2>
-//       <p className="Paragraph">
-//         <strong>Room ID:</strong> {roomId}
-//       </p>
-//       <p className="Paragraph">
-//         <strong>Participants:</strong>{" "}
-//         {participants.length > 0
-//           ? participants.map((p) => p.name || p.email || "User").join(", ")
-//           : "No participants yet"}
-//       </p>
-
-//       <input
-//         ref={descRef}
-//         className="input"
-//         type="text"
-//         placeholder="Description"
-//         value={desc}
-//         onChange={(e) => setDesc(e.target.value)}
-//       />
-//       <input
-//         type="number"
-//         className="input"
-//         placeholder="Amount"
-//         value={amount}
-//         onChange={(e) => setAmount(e.target.value)}
-//       />
-//       <button className="button" onClick={handleAddExpense}>
-//         Add Expense
-//       </button>
-
-//       {message && <p>{message}</p>}
-
-//       {splitAmount && (
-//         <p className="Paragraph">
-//           <strong>Each person should pay:</strong> Rs.{splitAmount}
-//         </p>
-//       )}
-//     </div>
-//   );
-// }
-
-// export default RoomDashboard;
-
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import RoomHistory from "./RoomHistory";
 
 const API = "https://expense-split-backend-1.onrender.com";
 
-function RoomHistory({ token }) {
-  const { roomId } = useParams(); // ⬅️ Extract roomId from URL
-  const [expenses, setExpenses] = useState([]);
+function RoomDashboard({ token }) {
+  const { roomId } = useParams();
+  const [participants, setParticipants] = useState([]);
+  const [creator, setCreator] = useState("");
+  const [currentUser, setCurrentUser] = useState("");
+  const [desc, setDesc] = useState("");
+  const [amount, setAmount] = useState("");
   const [message, setMessage] = useState("");
 
+  // 🔐 Decode current user from token
   useEffect(() => {
-    if (!roomId) {
-      setMessage("Room ID is missing.");
-      return;
+    if (token) {
+      const payload = JSON.parse(atob(token.split(".")[1]));
+      setCurrentUser(payload.username);
     }
+  }, [token]);
 
-    const fetchRoomExpenses = async () => {
+  // 👥 Fetch participants + creator
+  useEffect(() => {
+    const fetchRoomDetails = async () => {
       try {
-        const res = await fetch(`${API}/api/room/${roomId}/history`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+        const res = await fetch(`${API}/api/room/${roomId}/details`, {
+          headers: { Authorization: `Bearer ${token}` },
         });
 
         const data = await res.json();
-
         if (res.ok) {
-          setExpenses(data.expenses || []);
-          setMessage("");
+          setParticipants(data.participants);
+          setCreator(data.created_by);
         } else {
-          setMessage(data.message || "Failed to fetch room history.");
+          setMessage("Failed to load room details.");
         }
       } catch (err) {
         setMessage("Server error: " + err.message);
       }
     };
 
-    fetchRoomExpenses();
+    fetchRoomDetails();
   }, [roomId, token]);
+
+  // 💸 Submit expense (creator only)
+  const handleAddExpense = async () => {
+    if (!desc || !amount) {
+      setMessage("Please enter description and amount.");
+      return;
+    }
+
+    try {
+      const res = await fetch(`${API}/api/room/${roomId}/expense`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ desc, amount }),
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        setMessage("Expense added successfully!");
+        setDesc("");
+        setAmount("");
+      } else {
+        setMessage(data.message || "Failed to add expense.");
+      }
+    } catch (err) {
+      setMessage("Server error: " + err.message);
+    }
+  };
 
   return (
     <div className="centreBox">
-      <h3 className="topHeading">Room Expense History</h3>
-      {message && <p style={{ color: "red" }}>{message}</p>}
+      <h2 className="topHeading">Room Dashboard (ID: {roomId})</h2>
+
+      <p><strong>Created By:</strong> {creator}</p>
+      <p><strong>Total Participants:</strong> {participants.length}</p>
 
       <ul>
-        {expenses.length === 0 && !message ? (
-          <li className="Paragraph">No expenses recorded yet.</li>
-        ) : (
-          expenses.map((exp, index) => (
-            <li key={index} className="Paragraph">
-              <strong>{exp.username}</strong> added: <em>{exp.description}</em> — Rs.{exp.amount}
-              <br />
-              Shared by {exp.people} people on{" "}
-              {new Date(exp.created_at).toLocaleString()}
-            </li>
-          ))
-        )}
+        {participants.map((p, idx) => (
+          <li key={idx} className="Paragraph">👤 {p.name}</li>
+        ))}
       </ul>
+
+      {creator === currentUser ? (
+        <div className="add-expense">
+          <h3>Add Expense (Only Creator)</h3>
+          <input
+            type="text"
+            className="input"
+            placeholder="Description"
+            value={desc}
+            onChange={(e) => setDesc(e.target.value)}
+          />
+          <input
+            type="number"
+            className="input"
+            placeholder="Amount"
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
+          />
+          <button className="button" onClick={handleAddExpense}>
+            Add Expense
+          </button>
+        </div>
+      ) : (
+        <p><strong>Only the room creator can add expenses.</strong></p>
+      )}
+
+      {message && <p style={{ color: message.includes("success") ? "green" : "red" }}>{message}</p>}
+
+      <RoomHistory token={token} roomId={roomId} />
     </div>
   );
 }
 
-export default RoomHistory;
+export default RoomDashboard;
