@@ -7,26 +7,22 @@ function History({ token }) {
   const [message, setMessage] = useState("");
 
   const fetchHistory = useCallback(async () => {
-    console.log("Fetching history with token:", token);
-
     try {
-      const res = await fetch(`${API}/api/history`, {
+      const res = await fetch(`${API}/api/expense/personal`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
 
       const data = await res.json();
-      console.log("API Response:", data);
 
       if (res.ok) {
-        setHistory(data);
+        setHistory(data); // Assuming your backend sends an array directly
         setMessage("");
       } else {
         setMessage("Failed to fetch history.");
       }
     } catch (err) {
-      console.error("Fetch error:", err.message);
       setMessage("Server error: " + err.message);
     }
   }, [token]);
@@ -46,7 +42,10 @@ function History({ token }) {
         ) : (
           history.map((expense, index) => (
             <li className="Paragraph" key={index}>
-              {expense.room_name || "Personal"} — ₹{expense.total_spent} split among {expense.participant_count} people
+              <strong>{expense.description}</strong> — ₹{expense.amount} split among {expense.people} people <br />
+              <span style={{ fontSize: "0.8em" }}>
+                on {new Date(expense.created_at).toLocaleString()}
+              </span>
             </li>
           ))
         )}

@@ -18,6 +18,7 @@ function RoomHistory({ token, roomId, reload }) {
         const data = await res.json();
 
         if (res.ok) {
+          // 🔍 Filter out dummy 0₹ entries like "joined the room"
           const filtered = (data.expenses || []).filter(
             (exp) => parseFloat(exp.amount) > 0
           );
@@ -41,7 +42,7 @@ function RoomHistory({ token, roomId, reload }) {
 
       <ul>
         {expenses.length === 0 && !message ? (
-          <li className="Paragraph">No expenses recorded yet.</li>
+          <li className="Paragraph">No expenses yet. Creator will add them soon.</li>
         ) : (
           expenses.map((exp, index) => (
             <li key={index} className="Paragraph">
@@ -59,3 +60,4 @@ function RoomHistory({ token, roomId, reload }) {
 }
 
 export default RoomHistory;
+
