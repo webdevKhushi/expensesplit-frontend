@@ -12,8 +12,9 @@ function RoomDashboard({ token }) {
   const [desc, setDesc] = useState("");
   const [amount, setAmount] = useState("");
   const [message, setMessage] = useState("");
+  const [reload, setReload] = useState(false); // 🔁 trigger history refresh
 
-  // 🔐 Decode current user from token
+  // Decode current user from token
   useEffect(() => {
     if (token) {
       const payload = JSON.parse(atob(token.split(".")[1]));
@@ -21,7 +22,7 @@ function RoomDashboard({ token }) {
     }
   }, [token]);
 
-  // 👥 Fetch participants + creator
+  // Fetch room details (creator and participants)
   useEffect(() => {
     const fetchRoomDetails = async () => {
       try {
@@ -44,7 +45,7 @@ function RoomDashboard({ token }) {
     fetchRoomDetails();
   }, [roomId, token]);
 
-  // 💸 Submit expense (creator only)
+  // Handle expense submission (only creator)
   const handleAddExpense = async () => {
     if (!desc || !amount) {
       setMessage("Please enter description and amount.");
@@ -66,6 +67,7 @@ function RoomDashboard({ token }) {
         setMessage("Expense added successfully!");
         setDesc("");
         setAmount("");
+        setReload((prev) => !prev); // 🔁 trigger RoomHistory to reload
       } else {
         setMessage(data.message || "Failed to add expense.");
       }
@@ -114,7 +116,8 @@ function RoomDashboard({ token }) {
 
       {message && <p style={{ color: message.includes("success") ? "green" : "red" }}>{message}</p>}
 
-      <RoomHistory token={token} roomId={roomId} />
+      {/* ✅ Room history shown for all participants */}
+      <RoomHistory token={token} roomId={roomId} reload={reload} />
     </div>
   );
 }
