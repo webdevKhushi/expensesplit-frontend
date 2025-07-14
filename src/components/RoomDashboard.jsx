@@ -169,10 +169,6 @@ function RoomDashboard({ token }) {
         const userValue = decodedPayload.username?.trim().toLowerCase() || "";
         setCurrentUser(userValue);
 
-        // Optional debug (remove later)
-        console.log("DEBUG creator:", creatorValue);
-        console.log("DEBUG currentUser:", userValue);
-        console.log("DEBUG match:", userValue === creatorValue);
 
       } catch (err) {
         console.error("Room data fetch error:", err);
