@@ -18,7 +18,10 @@ function RoomHistory({ token, roomId, reload }) {
         const data = await res.json();
 
         if (res.ok) {
-          setExpenses(data.expenses || []);
+          const filtered = (data.expenses || []).filter(
+            (exp) => parseFloat(exp.amount) > 0
+          );
+          setExpenses(filtered);
           setMessage("");
         } else {
           setMessage(data.message || "Failed to fetch room history.");
@@ -32,7 +35,7 @@ function RoomHistory({ token, roomId, reload }) {
   }, [token, roomId, reload]);
 
   return (
-    <div>
+    <div className="centreBox">
       <h3 className="topHeading">Room Expense History</h3>
       {message && <p style={{ color: "red" }}>{message}</p>}
 
@@ -43,7 +46,7 @@ function RoomHistory({ token, roomId, reload }) {
           expenses.map((exp, index) => (
             <li key={index} className="Paragraph">
               <strong>{exp.username}</strong> added:{" "}
-              <em>{exp.description}</em> — Rs.{exp.amount}
+              <em>{exp.description}</em> — ₹{exp.amount}
               <br />
               Shared by {exp.people} people on{" "}
               {new Date(exp.created_at).toLocaleString()}

@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import RoomHistory from "./RoomHistory";
 
-
 const API = "https://expense-split-backend-1.onrender.com";
 
 function RoomDashboard({ token }) {
@@ -13,7 +12,7 @@ function RoomDashboard({ token }) {
   const [desc, setDesc] = useState("");
   const [amount, setAmount] = useState("");
   const [message, setMessage] = useState("");
-  const [reload, setReload] = useState(false); // 🔁 trigger history refresh
+  const [reload, setReload] = useState(false);
 
   // Decode current user from token
   useEffect(() => {
@@ -23,7 +22,7 @@ function RoomDashboard({ token }) {
     }
   }, [token]);
 
-  // Fetch room details (creator and participants)
+  // Fetch room details
   useEffect(() => {
     const fetchRoomDetails = async () => {
       try {
@@ -46,7 +45,7 @@ function RoomDashboard({ token }) {
     fetchRoomDetails();
   }, [roomId, token]);
 
-  // Handle expense submission (only creator)
+  // Handle expense submission (creator only)
   const handleAddExpense = async () => {
     if (!desc || !amount) {
       setMessage("Please enter description and amount.");
@@ -68,7 +67,7 @@ function RoomDashboard({ token }) {
         setMessage("Expense added successfully!");
         setDesc("");
         setAmount("");
-        setReload((prev) => !prev); // 🔁 trigger RoomHistory to reload
+        setReload(prev => !prev); // Refresh RoomHistory
       } else {
         setMessage(data.message || "Failed to add expense.");
       }
@@ -86,7 +85,7 @@ function RoomDashboard({ token }) {
 
       <ul>
         {participants.map((p, idx) => (
-          <li key={idx} className="Paragraph">👤 {p.name}</li>
+          <li key={idx} className="Paragraph">{p.name}</li>
         ))}
       </ul>
 
@@ -115,9 +114,13 @@ function RoomDashboard({ token }) {
         <p><strong>Only the room creator can add expenses.</strong></p>
       )}
 
-      {message && <p style={{ color: message.includes("success") ? "green" : "red" }}>{message}</p>}
+      {message && (
+        <p style={{ color: message.includes("success") ? "green" : "red" }}>
+          {message}
+        </p>
+      )}
 
-      {/* ✅ Room history shown for all participants */}
+      {/* Shared Room Expense History for all participants */}
       <RoomHistory token={token} roomId={roomId} reload={reload} />
     </div>
   );
