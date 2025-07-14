@@ -52,61 +52,58 @@
 
 // export default History;
 
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState } from "react";
 
 const API = "https://expense-split-backend-1.onrender.com";
 
-function History({ token }) {
-  const [history, setHistory] = useState([]);
+function RoomHistory({ token, roomId }) {
+  const [expenses, setExpenses] = useState([]);
   const [message, setMessage] = useState("");
 
-  const fetchHistory = useCallback(async () => {
-    try {
-      const res = await fetch(`${API}/api/history`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (res.ok) {
-        const data = await res.json();
-        setHistory(data);
-        setMessage("");
-      } else {
-        setMessage("Failed to fetch history.");
-      }
-    } catch (err) {
-      setMessage("Server error: " + err.message);
-    }
-  }, [token]);
-
   useEffect(() => {
-    fetchHistory();
-  }, [fetchHistory]);
+    const fetchRoomExpenses = async () => {
+      try {
+        const res = await fetch(`${API}/api/room/${roomId}/history`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+          setExpenses(data.expenses || []);
+        } else {
+          setMessage(data.message || "Failed to fetch room history.");
+        }
+      } catch (err) {
+        setMessage("Server error: " + err.message);
+      }
+    };
+
+    fetchRoomExpenses();
+  }, [roomId, token]);
 
   return (
-    <div>
-      <h3 className="topHeading">Your Room-wise Expenses</h3>
+    <div className="centreBox">
+      <h3 className="topHeading">Room Expense History</h3>
       {message && <p style={{ color: "red" }}>{message}</p>}
 
-      <ol className="centreBox">
-        {history.length === 0 ? (
-          <li className="Paragraph">No room expenses yet.</li>
+      <ul>
+        {expenses.length === 0 ? (
+          <li className="Paragraph">No expenses recorded yet.</li>
         ) : (
-          history
-            .filter((entry) => entry.total_spent > 0)
-            .map((entry) => (
-              <li className="Paragraph" key={entry.room_id}>
-                You spent <strong>Rs.{entry.total_spent}</strong> in room{" "}
-                <strong>{entry.room_name}</strong> (ID: {entry.room_id})
-                <br />
-                Each participant paid: <strong>Rs.{(entry.total_spent / entry.participant_count).toFixed(2)}</strong>
-              </li>
-            ))
+          expenses.map((exp, index) => (
+            <li key={index} className="Paragraph">
+              <strong>{exp.username}</strong> added: <em>{exp.description}</em> — Rs.{exp.amount}
+              <br />
+              Shared by {exp.people} people on {new Date(exp.created_at).toLocaleString()}
+            </li>
+          ))
         )}
-      </ol>
+      </ul>
     </div>
   );
 }
 
-export default History;
+export default RoomHistory;
