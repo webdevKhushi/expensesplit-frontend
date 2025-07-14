@@ -52,6 +52,7 @@
 
 // export default History;
 
+
 import React, { useEffect, useState } from "react";
 
 const API = "https://expense-split-backend-1.onrender.com";
@@ -62,6 +63,11 @@ function RoomHistory({ token, roomId }) {
 
   useEffect(() => {
     const fetchRoomExpenses = async () => {
+      if (!roomId) {
+        setMessage("Room ID is missing.");
+        return;
+      }
+
       try {
         const res = await fetch(`${API}/api/room/${roomId}/history`, {
           headers: {
@@ -73,6 +79,7 @@ function RoomHistory({ token, roomId }) {
 
         if (res.ok) {
           setExpenses(data.expenses || []);
+          setMessage("");
         } else {
           setMessage(data.message || "Failed to fetch room history.");
         }
@@ -97,7 +104,8 @@ function RoomHistory({ token, roomId }) {
             <li key={index} className="Paragraph">
               <strong>{exp.username}</strong> added: <em>{exp.description}</em> — Rs.{exp.amount}
               <br />
-              Shared by {exp.people} people on {new Date(exp.created_at).toLocaleString()}
+              Shared by {exp.people} people on{" "}
+              {new Date(exp.created_at).toLocaleString()}
             </li>
           ))
         )}
