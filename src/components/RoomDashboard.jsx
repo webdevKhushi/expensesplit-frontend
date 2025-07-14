@@ -158,11 +158,12 @@ function RoomDashboard({ token }) {
 
         const data = await res.json();
         setParticipants(data.participants || []);
-        setCreator(data.created_by || "");
+        setCreator(data.created_by?.toLowerCase() || "");
 
-        // Decode JWT to get current username
-        const payload = JSON.parse(atob(token.split(".")[1]));
-        setCurrentUser(payload.username);
+        // Decode JWT token and extract current username
+        const payloadBase64 = token.split(".")[1];
+        const decodedPayload = JSON.parse(atob(payloadBase64));
+        setCurrentUser(decodedPayload.username?.toLowerCase() || "");
       } catch (err) {
         console.error("Room data fetch error:", err);
         setMessage("Server error while loading room data.");
@@ -216,6 +217,8 @@ function RoomDashboard({ token }) {
       ? (parseFloat(amount) / participants.length).toFixed(2)
       : null;
 
+  const isCreator = currentUser && creator && currentUser === creator;
+
   return (
     <div className="centreBox">
       <h2 className="topHeading">Room Dashboard</h2>
@@ -229,7 +232,7 @@ function RoomDashboard({ token }) {
           : "No participants yet"}
       </p>
 
-      {currentUser === creator ? (
+      {isCreator ? (
         <>
           <input
             ref={descRef}
