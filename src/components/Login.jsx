@@ -28,16 +28,14 @@ function Login({ saveToken }) {
       if (res.ok && data.success) {
         saveToken(data.token);
         navigate("/");
-      } else if (res.status === 403) {
-        setMessage(" Please verify your email before logging in.");
       } else if (res.status === 401) {
-        setMessage(" Invalid username or password.");
+        setMessage("Invalid username or password.");
       } else {
-        setMessage(data.message || " Login failed. Please try again.");
+        setMessage(data.message || "Login failed. Please try again.");
       }
     } catch (error) {
       console.error("Login Error:", error);
-      setMessage(" Network error. Please try again later.");
+      setMessage("Network error. Please try again later.");
     }
   };
 
@@ -77,4 +75,3 @@ function Login({ saveToken }) {
 }
 
 export default Login;
-

@@ -28,7 +28,7 @@ function Signup() {
       const data = await res.json();
 
       if (res.ok && data.success) {
-        setMessage("Signup successful! Check your email for verification.");
+        setMessage("Signup successful! Redirecting to login...");
         setTimeout(() => navigate("/login"), 3000);
       } else {
         setError(data.message || "Signup failed");
@@ -86,4 +86,3 @@ function Signup() {
 }
 
 export default Signup;
-
