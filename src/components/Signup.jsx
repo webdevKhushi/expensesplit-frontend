@@ -7,6 +7,7 @@ const API = "https://expense-split-backend-1.onrender.com";
 
 function Signup() {
   const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
   const navigate = useNavigate();
@@ -14,21 +15,24 @@ function Signup() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMessage("");
+
     try {
       const res = await fetch(`${API}/api/signup`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify({ username, email, password }),
       });
+
       const data = await res.json();
+
       if (data.success) {
-        setMessage("Signup successful! Redirecting to login...");
-        setTimeout(() => navigate("/login"), 1500);
+        setMessage(" Signup successful! Check your email for verification.");
+        setTimeout(() => navigate("/login"), 3000);
       } else {
-        setMessage(data.message || "Signup failed");
+        setMessage(data.message || " Signup failed");
       }
     } catch {
-      setMessage("Signup failed due to network error");
+      setMessage(" Signup failed due to network error");
     }
   };
 
@@ -49,6 +53,15 @@ function Signup() {
         />
         <br />
         <input
+          type="email"
+          className="input"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+        />
+        <br />
+        <input
           type="password"
           className="input"
           placeholder="Password"
@@ -59,7 +72,7 @@ function Signup() {
         <br />
         <button className="button" type="submit">Signup</button>
       </form>
-      <p>{message}</p>
+      <p style={{ color: "green", textAlign: "center" }}>{message}</p>
       <p className="Paragraph">
         Already have an account? <Link to="/login">Login here</Link>
       </p>

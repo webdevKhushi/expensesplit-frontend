@@ -25,15 +25,19 @@ function Login({ saveToken }) {
       const data = await res.json();
       console.log("Login response:", data);
 
-      if (data.success) {
+      if (res.ok && data.success) {
         saveToken(data.token);
         navigate("/");
+      } else if (res.status === 403) {
+        setMessage(" Please verify your email before logging in.");
+      } else if (res.status === 401) {
+        setMessage(" Invalid username or password.");
       } else {
-        setMessage(data.message || "Invalid username or password");
+        setMessage(data.message || " Login failed. Please try again.");
       }
     } catch (error) {
       console.error("Login Error:", error);
-      setMessage("Login failed due to network error");
+      setMessage(" Network error. Please try again later.");
     }
   };
 
@@ -64,7 +68,7 @@ function Login({ saveToken }) {
         <br />
         <button className="button" type="submit">Login</button>
       </form>
-      <p>{message}</p>
+      {message && <p style={{ color: "red" }}>{message}</p>}
       <p className="Paragraph">
         Don't have an account? <Link to="/signup">Signup here</Link>
       </p>
@@ -73,3 +77,4 @@ function Login({ saveToken }) {
 }
 
 export default Login;
+
