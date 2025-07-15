@@ -10,11 +10,13 @@ function Signup() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMessage("");
+    setError("");
 
     try {
       const res = await fetch(`${API}/api/signup`, {
@@ -25,14 +27,14 @@ function Signup() {
 
       const data = await res.json();
 
-      if (data.success) {
-        setMessage(" Signup successful! Check your email for verification.");
+      if (res.ok && data.success) {
+        setMessage("Signup successful! Check your email for verification.");
         setTimeout(() => navigate("/login"), 3000);
       } else {
-        setMessage(data.message || " Signup failed");
+        setError(data.message || "Signup failed");
       }
     } catch {
-      setMessage(" Signup failed due to network error");
+      setError("Signup failed due to network error");
     }
   };
 
@@ -72,7 +74,10 @@ function Signup() {
         <br />
         <button className="button" type="submit">Signup</button>
       </form>
-      <p style={{ color: "green", textAlign: "center" }}>{message}</p>
+
+      {message && <p style={{ color: "green", textAlign: "center" }}>{message}</p>}
+      {error && <p style={{ color: "red", textAlign: "center" }}>{error}</p>}
+
       <p className="Paragraph">
         Already have an account? <Link to="/login">Login here</Link>
       </p>
@@ -81,3 +86,4 @@ function Signup() {
 }
 
 export default Signup;
+
