@@ -7,7 +7,6 @@ const API = "https://expense-split-backend-1.onrender.com";
 
 function Signup() {
   const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
@@ -22,7 +21,7 @@ function Signup() {
       const res = await fetch(`${API}/api/signup`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, email, password }),
+        body: JSON.stringify({ username,  password }),
       });
 
       const data = await res.json();
@@ -54,14 +53,6 @@ function Signup() {
           required
         />
         <br />
-        <input
-          type="email"
-          className="input"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
         <br />
         <input
           type="password"
